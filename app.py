@@ -7,6 +7,13 @@ from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 from groq import Groq
 
+st.set_page_config(
+    page_title="Stock Analysis AI | Uvesh",
+    page_icon="📈",
+    layout="wide"
+)
+
+
 # Constants
 HUGGINGFACE_MODEL = "sentence-transformers/all-mpnet-base-v2"
 DEFAULT_QUERY = "Give me Best Electric cars stock to invest?"
@@ -95,7 +102,7 @@ def get_ai_analysis(client, contexts, query):
 
 def main():
     load_css()
-    st.title("Stock Analysis with AI-")
+    st.title("Stock Analysis with AI")
     
     # Initialize clients
     groq_client, pinecone_index = initialize_clients()
