@@ -1,0 +1,12 @@
+langchain_pinecone
+openai
+python-dotenv
+yfinance
+langchain_community
+sentence-transformers
+scikit-learn
+pinecone-client
+numpy
+requests
+streamlit 
+groq

@@ -1,0 +1,77 @@
+/* Reset default styles */
+header {
+    background-color: transparent !important;
+}
+
+.stApp > header {
+    background-color: transparent !important;
+}
+
+.stApp {
+    background-color: transparent !important;
+}
+
+/* Remove top padding */
+.block-container {
+    padding-top: 2rem !important;
+}
+
+div[data-testid="stMarkdown"] {
+    background-color: #1E1E1E;
+    padding: 15px 25px;
+    border-radius: 10px;
+    margin: 5px 0;
+    color: #FFFFFF;
+    max-width: 100%;
+}
+
+.stMarkdown h1 {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.stMarkdown a {
+    color: #4A9EFF !important;
+    text-decoration: none;
+    display: block;
+    margin: 8px 0;
+}
+
+.stMarkdown table {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.stMarkdown td {
+    padding: 4px 0;
+    border: none;
+    font-size: 14px;
+}
+
+div[data-testid="column"] {
+    width: 100% !important;
+    padding: 0 5px !important;
+}
+
+.negative { color: #FF4B4B; }
+.positive { color: #4BFF4B; }
+
+/* Footer Styles */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #1E1E1E;
+    color: #FFFFFF;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+}
+
+.footer a {
+    color: #4A9EFF;
+    text-decoration: none;
+} 
