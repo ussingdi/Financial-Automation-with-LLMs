@@ -382,11 +382,10 @@ st.markdown("""
 # Initialize clients
 def initialize_clients():
     """Initialize Pinecone and Groq clients"""
-    pinecone_api_key = st.secrets["api_keys"]["PINECONE_API_KEY"]
-    pinecone_env = st.secrets["api_keys"]["PINECONE_ENVIRONMENT"]
-    openai_api_key = st.secrets["api_keys"]["OPENAI_API_KEY"]
-    groq_api_key = st.secrets["api_keys"]["GROQ_API_KEY"]
-    finnhub_api_key = st.secrets["api_keys"]["FINNHUB_API_KEY"]
+    pinecone_api_key = os.getenv("PINECONE_API_KEY")
+    pinecone_env = os.getenv("PINECONE_ENVIRONMENT")
+    groq_api_key = os.getenv("GROQ_API_KEY")
+    openai_api_key = os.getenv("OPENAI_API_KEY")  # Still needed for embeddings
     
     if not pinecone_api_key or not pinecone_env:
         st.error("Pinecone API key or environment not found in .env file")
@@ -963,7 +962,7 @@ def fetch_stock_news(ticker, days_back=7, max_articles=5):
     """Fetch recent news articles for a stock using Finnhub"""
     try:
         # Initialize Finnhub client
-        finnhub_client = finnhub.Client(api_key=finnhub_api_key)
+        finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
         
         # Calculate date range
         end_date = datetime.now()
