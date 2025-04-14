@@ -396,8 +396,8 @@ def initialize_clients():
         return None, None, None
     
     try:
-        # Initialize Pinecone using the Pinecone class from pinecone-client 3.0.0
-        pc = Pinecone(api_key=pinecone_api_key, environment=pinecone_env)
+        # Initialize Pinecone using the Pinecone class from pinecone-client 5.x
+        pc = Pinecone(api_key=pinecone_api_key)
         
         # Get the index
         pinecone_index = pc.Index(PINECONE_INDEX_NAME)
