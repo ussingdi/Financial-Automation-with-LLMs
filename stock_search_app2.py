@@ -378,29 +378,31 @@ st.markdown("""
 # Initialize clients
 def initialize_clients():
     """Initialize Pinecone and Groq clients"""
-    pinecone_api_key = st.secrets["PINECONE_API_KEY"]
-    pinecone_env = st.secrets["PINECONE_ENVIRONMENT"]
-    groq_api_key = st.secrets["GROQ_API_KEY"]
-    openai_api_key = st.secrets["OPENAI_API_KEY"]  # Still needed for embeddings
-    
-    if not pinecone_api_key or not pinecone_env:
-        st.error("Pinecone API key or environment not found in secrets.toml file")
-        return None, None, None
-        
-    if not groq_api_key:
-        st.error("Groq API key not found in secrets.toml file")
-        return None, None, None
-        
-    if not openai_api_key:
-        st.error("OpenAI API key not found in secrets.toml file (needed for embeddings)")
-        return None, None, None
-    
     try:
-        # Initialize Pinecone using the Pinecone class from pinecone-client 5.x
+        # Get API keys from secrets
+        pinecone_api_key = st.secrets["PINECONE_API_KEY"]
+        groq_api_key = st.secrets["GROQ_API_KEY"]
+        openai_api_key = st.secrets["OPENAI_API_KEY"]  # Still needed for embeddings
+        
+        # Check if keys exist
+        if not pinecone_api_key:
+            st.error("Pinecone API key not found in secrets.toml file")
+            return None, None, None
+            
+        if not groq_api_key:
+            st.error("Groq API key not found in secrets.toml file")
+            return None, None, None
+            
+        if not openai_api_key:
+            st.error("OpenAI API key not found in secrets.toml file (needed for embeddings)")
+            return None, None, None
+        
+        # Initialize Pinecone client (compatible with version 5.0.0)
         pc = Pinecone(api_key=pinecone_api_key)
         
-        # Get the index
-        pinecone_index = pc.Index(PINECONE_INDEX_NAME)
+        # Get the index using the new method for Pinecone v5.0.0
+        index_name = st.secrets["pinecone"]["INDEX_NAME"]
+        pinecone_index = pc.Index(index_name)
         
         # Initialize Groq client for LLM operations
         groq_client = groq.Groq(api_key=groq_api_key)
