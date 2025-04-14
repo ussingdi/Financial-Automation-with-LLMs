@@ -13,6 +13,7 @@ import json
 import finnhub
 import groq
 import random
+
 # Page configuration
 st.set_page_config(
     page_title="Financial Research Automation with LLMs",
@@ -389,19 +390,21 @@ def initialize_clients():
     
     if not pinecone_api_key or not pinecone_env:
         st.error("Pinecone API key or environment not found in .env file")
-        return None, None
+        return None, None, None
         
     if not groq_api_key:
         st.error("Groq API key not found in .env file")
-        return None, None
+        return None, None, None
         
     if not openai_api_key:
         st.error("OpenAI API key not found in .env file (needed for embeddings)")
-        return None, None
+        return None, None, None
     
     try:
-        # Initialize Pinecone
+        # Initialize Pinecone using the Pinecone class from pinecone-client 3.0.0
         pc = Pinecone(api_key=pinecone_api_key, environment=pinecone_env)
+        
+        # Get the index
         pinecone_index = pc.Index(PINECONE_INDEX_NAME)
         
         # Initialize Groq client for LLM operations
@@ -414,7 +417,8 @@ def initialize_clients():
         
     except Exception as e:
         st.error(f"Error initializing clients: {str(e)}")
-        return None, None
+        st.error("Please check your API keys and Pinecone index configuration")
+        return None, None, None
 
 # Get embeddings
 def get_embeddings(text, openai_client):
