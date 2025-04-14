@@ -404,8 +404,8 @@ def initialize_clients():
         index_name = st.secrets["pinecone"]["INDEX_NAME"]
         pinecone_index = pc.Index(index_name)
         
-        # Initialize Groq client for LLM operations
-        groq_client = groq.Groq(api_key=groq_api_key)
+        # Initialize Groq client with minimal configuration to avoid proxies error
+        groq_client = groq.Client(api_key=groq_api_key)
         
         # Initialize OpenAI client for embeddings only
         openai_client = OpenAI(api_key=openai_api_key)

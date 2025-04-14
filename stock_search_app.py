@@ -13,7 +13,6 @@ import json
 import finnhub
 import groq
 import random
-
 # Page configuration
 st.set_page_config(
     page_title="Financial Research Automation with LLMs",
@@ -23,7 +22,7 @@ st.set_page_config(
 )
 
 # Load environment variables
-load_dotenv()
+load_dotenv(override=True)
 
 # Constants
 PINECONE_INDEX_NAME = "mastersproject"
@@ -37,6 +36,8 @@ st.markdown("""
     /* Base styling */
     body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: #f0f2f6;
+        color: #1f2937;
     }
     
     /* Container width control */
@@ -58,7 +59,8 @@ st.markdown("""
     
     /* Card container styling */
     [data-testid="stVerticalBlock"] {
-        border: 1px solid rgba(229, 231, 235, 0.5);
+        background-color: white;
+        border: 1px solid #e5e7eb;
         border-radius: 10px;
         padding: 20px;
         margin: 10px 0;
@@ -75,10 +77,11 @@ st.markdown("""
     
     /* Stock card */
     .stock-card {
+        background-color: white;
         border-radius: 10px;
         padding: 20px;
         margin-bottom: 20px;
-        border: 1px solid rgba(229, 231, 235, 0.5);
+        border: 1px solid #e5e7eb;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         height: 100%;
@@ -86,6 +89,7 @@ st.markdown("""
     
     /* Plot container */
     .plot-container {
+        background: white;
         border-radius: 10px;
         padding: 20px;
         margin: 20px 0;
@@ -122,10 +126,11 @@ st.markdown("""
     
     /* Headers styling */
     .stMarkdown h3 {
+        color: #1f2937;
         font-size: 22px;
         margin-bottom: 15px;
         padding-bottom: 10px;
-        border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+        border-bottom: 1px solid #e5e7eb;
     }
     
     /* Links styling */
@@ -140,9 +145,10 @@ st.markdown("""
     
     /* DataFrame styling */
     [data-testid="stDataFrame"] {
+        background-color: #f0f2f6;
         border-radius: 8px;
         overflow: hidden;
-        border: 1px solid rgba(229, 231, 235, 0.5);
+        border: 1px solid #e5e7eb;
     }
     
     .dataframe {
@@ -151,10 +157,10 @@ st.markdown("""
     
     /* Description text */
     .stock-description {
+        color: #4b5563;
         font-size: 14px;
         line-height: 1.6;
         margin: 10px 0;
-        opacity: 0.8;
     }
     
     /* Spinner color */
@@ -169,18 +175,34 @@ st.markdown("""
     
     /* Results header */
     .results-header {
-        font-size: 24px;
-        font-weight: 700;
         margin-top: 30px;
-        margin-bottom: 15px;
-        padding-left: 15px;
-        border-left: 5px solid #3b82f6;
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: white;
+        border-radius: 8px;
+        border-left: 4px solid #3b82f6;
     }
     
-    /* Results count */
-    .results-count {
-        font-size: 16px;
+    .results-header h2 {
+        color: #1f2937;
+        font-size: 20px;
+        margin: 0;
+    }
+    
+    /* Card styling */
+    .stock-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 25px;
         margin-bottom: 20px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .stock-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
     
     /* Stock title */
@@ -188,7 +210,8 @@ st.markdown("""
         font-size: 22px;
         font-weight: 700;
         margin-bottom: 12px;
-        border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+        color: #1f2937;
+        border-bottom: 1px solid #e5e7eb;
         padding-bottom: 10px;
     }
     
@@ -208,36 +231,44 @@ st.markdown("""
     .stock-link a {
         color: #3b82f6;
         text-decoration: none;
-        font-weight: 600;
+        font-size: 14px;
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: rgba(59, 130, 246, 0.1);
+        border-radius: 5px;
+        transition: background-color 0.2s ease;
     }
     
     .stock-link a:hover {
-        text-decoration: underline;
+        background-color: rgba(59, 130, 246, 0.2);
     }
     
-    /* Stock metrics */
-    .stock-metrics {
-        margin: 15px 0;
-    }
-    
-    .stock-metrics table {
+    /* Metrics table */
+    .metrics-table {
         width: 100%;
-        border-collapse: collapse;
-    }
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #f0f2f6;
+    }       
     
-    .stock-metrics th {
+    .metrics-table th {
         text-align: left;
-        padding: 8px 5px;
+        padding: 12px 15px;
+        background-color: #e5e7eb;
+        color: #1f2937;
         font-weight: 600;
-        border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+        font-size: 14px;
     }
     
-    .stock-metrics td {
-        padding: 8px 5px;
-        border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+    .metrics-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 14px;
     }
     
-    .stock-metrics tr:last-child td {
+    .metrics-table tr:last-child td {
         border-bottom: none;
     }
     
@@ -254,54 +285,58 @@ st.markdown("""
     
     /* Analysis section */
     .analysis-section {
+        background-color: white;
         border-radius: 10px;
         padding: 25px;
         margin-top: 30px;
         margin-bottom: 40px;
-        border: 1px solid rgba(229, 231, 235, 0.5);
+        border: 1px solid #e5e7eb;
     }
     
     .analysis-section h2 {
-        font-size: 20px;
-        margin-bottom: 20px;
+        color: #1f2937;
+        font-size: 22px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #e5e7eb;
         padding-bottom: 10px;
-        border-bottom: 1px solid rgba(229, 231, 235, 0.5);
     }
     
-    /* Analysis tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        height: 40px;
-        white-space: pre-wrap;
-        border-radius: 4px 4px 0 0;
-        gap: 1px;
-        padding: 10px 16px;
-        font-size: 14px;
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background-color: rgba(59, 130, 246, 0.1);
-        font-weight: 600;
-    }
-    
-    /* Sentiment score */
-    .sentiment-score {
-        font-size: 24px;
-        font-weight: 700;
-        text-align: center;
-        padding: 15px;
+    /* Text area customization */
+    .stTextArea textarea {
+        background-color: white;
+        color: #1f2937;
+        border: 1px solid #e5e7eb;
         border-radius: 8px;
-        margin: 10px 0;
+        padding: 12px;
+        font-size: 16px;
     }
     
-    /* Sentiment table */
-    .sentiment-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 15px 0;
+    /* Stock selector styling */
+    .stock-selector {
+        margin: 20px 0;
+        padding: 15px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Multiselect styling */
+    .stMultiSelect {
+        max-width: 100%;
+    }
+    
+    .stMultiSelect > div {
+        border-radius: 8px;
+    }
+    
+    .stMultiSelect [data-baseweb="tag"] {
+        background-color: #2563eb;
+        border-radius: 6px;
+        padding: 2px 8px;
+    }
+    
+    .stMultiSelect [data-baseweb="tag"] span {
+        color: white;
         font-size: 0.9rem;
     }
     
@@ -325,64 +360,16 @@ st.markdown("""
         text-align: center;
         margin-top: 50px;
         padding: 20px 0;
-        border-top: 1px solid rgba(229, 231, 235, 0.5);
-        opacity: 0.7;
+        border-top: 1px solid #e5e7eb;
+        color: #4b5563;
         font-size: 14px;
-    }
-    
-    /* SEC filings styling */
-    .sec-filings {
-        margin-top: 30px;
-    }
-    
-    .sec-filings h3 {
-        font-size: 20px;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid rgba(229, 231, 235, 0.5);
-    }
-    
-    .sec-filings .filing {
-        padding: 15px;
-        border: 1px solid rgba(229, 231, 235, 0.5);
-        border-radius: 8px;
-        margin-bottom: 15px;
-    }
-    
-    .sec-filings .filing .filing-date {
-        font-size: 14px;
-        opacity: 0.7;
-    }
-    
-    .sec-filings .filing .filing-type {
-        font-weight: 600;
-        margin: 5px 0;
-    }
-    
-    .sec-filings .filing .filing-link {
-        margin-top: 10px;
-    }
-    
-    .sec-filings .filing .filing-link a {
-        color: #3b82f6;
-        text-decoration: none;
-        font-size: 14px;
-        display: inline-block;
-        padding: 5px 10px;
-        background-color: rgba(59, 130, 246, 0.1);
-        border-radius: 5px;
-        transition: background-color 0.2s ease;
-    }
-    
-    .sec-filings .filing .filing-link:hover {
-        background-color: rgba(59, 130, 246, 0.2);
     }
 </style>
 """, unsafe_allow_html=True)
 
 # Initialize clients
 def initialize_clients():
-    """Initialize Pinecone and Groq clients"""
+    load_dotenv(override=True)
     pinecone_api_key = os.getenv("PINECONE_API_KEY")
     pinecone_env = os.getenv("PINECONE_ENVIRONMENT")
     groq_api_key = os.getenv("GROQ_API_KEY")
@@ -390,21 +377,19 @@ def initialize_clients():
     
     if not pinecone_api_key or not pinecone_env:
         st.error("Pinecone API key or environment not found in .env file")
-        return None, None, None
+        return None, None
         
     if not groq_api_key:
         st.error("Groq API key not found in .env file")
-        return None, None, None
+        return None, None
         
     if not openai_api_key:
         st.error("OpenAI API key not found in .env file (needed for embeddings)")
-        return None, None, None
+        return None, None
     
     try:
-        # Initialize Pinecone using the Pinecone class from pinecone-client 3.0.0
+        # Initialize Pinecone
         pc = Pinecone(api_key=pinecone_api_key, environment=pinecone_env)
-        
-        # Get the index
         pinecone_index = pc.Index(PINECONE_INDEX_NAME)
         
         # Initialize Groq client for LLM operations
@@ -417,8 +402,7 @@ def initialize_clients():
         
     except Exception as e:
         st.error(f"Error initializing clients: {str(e)}")
-        st.error("Please check your API keys and Pinecone index configuration")
-        return None, None, None
+        return None, None
 
 # Get embeddings
 def get_embeddings(text, openai_client):
@@ -542,27 +526,29 @@ def get_ai_analysis(groq_client, contexts=None, query=None, tickers=None, start_
 
 {' | '.join(performance_data)}
 
-Please provide:
+Please provide and Keep the analysis concise but insightful.
+DO NOT include any thinking process or tags like <think> or </think> in your response.
 1. A comparison of how these stocks performed relative to each other
 2. Notable trends or patterns in their performance
 3. Key factors that might have influenced their performance during this period
 4. Any interesting correlations between these stocks
 
-Keep the analysis concise but insightful. DO NOT include any thinking process or tags like <think> or </think> in your response."""
-            
-            system_prompt = "You are a financial analyst providing insights on stock performance. Present your analysis directly without showing your thinking process. Never use <think> tags or similar in your output."
+Keep the analysis concise but insightful.
+DO NOT include any thinking process or tags like <think> or </think> in your response."""
+
+            system_prompt = "You are a financial analyst providing insights on stock performance, DO NOT include any thinking process or tags like <think> or </think> in your response."
             
         elif analysis_type == "general" and contexts and query:
             # Prepare prompt for general analysis
             augmented_query = "<CONTEXT>\n" + "\n\n-------\n\n".join(contexts[:10]) + "\n-------\n</CONTEXT>\n\n\n\nMY QUESTION:\n" + query
-            system_prompt = "You are an expert at providing answers about stocks. Please answer my question provided. Present your analysis directly without showing your thinking process. Never use <think> tags or similar in your output."
+            system_prompt = "You are an expert at providing answers about stocks, DO NOT include any thinking process or tags like <think> or </think> in your response."
             prompt = augmented_query
             
         else:
             raise ValueError("Invalid analysis type or missing required parameters")
         
         response = groq_client.chat.completions.create(
-            model="deepseek-r1-distill-qwen-32b",
+            model="deepseek-r1-distill-llama-70b",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
@@ -571,14 +557,7 @@ Keep the analysis concise but insightful. DO NOT include any thinking process or
             max_tokens=2000
         )
         
-        # Filter out any thinking tags that might still appear in the response
-        content = response.choices[0].message.content
-        
-        # Remove any <think>...</think> sections
-        import re
-        content = re.sub(r'<think>.*?</think>', '', content, flags=re.DOTALL)
-        
-        return content
+        return response.choices[0].message.content
         
     except Exception as e:
         st.error(f"Error in AI analysis: {str(e)}")
@@ -619,7 +598,7 @@ def analyze_article_sentiment(article_text, groq_client):
     
     try:
         response = groq_client.chat.completions.create(
-            model="deepseek-r1-distill-qwen-32b",
+            model="deepseek-r1-distill-llama-70b",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": article_text}
@@ -680,7 +659,7 @@ def get_market_factors(groq_client, ticker):
                     Scores should be between 1-10."""
         
         response = groq_client.chat.completions.create(
-            model="deepseek-r1-distill-qwen-32b",
+            model="deepseek-r1-distill-llama-70b",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": company_info}
@@ -726,9 +705,22 @@ def plot_stock_comparison(tickers, start_date, end_date):
         title='Normalized Stock Price History (% Change)',
         xaxis_title='Date',
         yaxis_title='Percentage Change (%)',
-        yaxis=dict(range=[0, 10]),
-        height=400,
-        margin=dict(l=50, r=50, t=50, b=50)
+        hovermode='x unified',
+        showlegend=True,
+        legend=dict(
+            yanchor="top",
+            y=0.99,
+            xanchor="left",
+            x=0.01
+        ),
+        width=800,
+        height=500,
+        margin=dict(l=50, r=50, t=50, b=50),
+        autosize=True,
+        title_font=dict(size=20),
+        legend_font=dict(size=12),
+        xaxis=dict(title_font=dict(size=14)),
+        yaxis=dict(title_font=dict(size=14))
     )
     
     return fig
@@ -1043,12 +1035,12 @@ def display_market_factor_explanations(factor_data, tickers):
                             
                             # Display factor with score and explanation
                             st.markdown(f"""
-                            <div style="margin-bottom: 15px; padding: 10px; border: 1px solid rgba(229, 231, 235, 0.5); border-radius: 8px;">
+                            <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px;">
                                 <h4 style="margin-bottom: 5px; display: flex; justify-content: space-between;">
                                     <span>{factor}</span>
                                     <span style="color: {score_color}; font-weight: bold;">{score}/10</span>
                                 </h4>
-                                <p style="margin-top: 5px; opacity: 0.8;">{explanation}</p>
+                                <p style="color: #4b5563; margin-top: 5px;">{explanation}</p>
                             </div>
                             """, unsafe_allow_html=True)
                 else:
@@ -1067,12 +1059,23 @@ def fetch_sec_filings(ticker):
         # In a production environment, you might want to use a dedicated SEC API
         # like sec-api.io or similar services
         
-        # Create only the most recent quarterly filing entry (10-Q)
+        # Create quarterly filing entries (10-Q)
+        # Most recent quarter
         q1_filing_date = datetime.now() - timedelta(days=random.randint(30, 60))
         filings.append({
             "date": q1_filing_date.strftime("%Y-%m-%d"),
             "type": "10-Q Filing",
             "quarter": "Q1",
+            "url": f"https://www.sec.gov/edgar/search/#/entityName={ticker}&category=form-cat1&filter=10-Q",
+            "insights_available": True
+        })
+        
+        # Previous quarter
+        q2_filing_date = datetime.now() - timedelta(days=random.randint(120, 150))
+        filings.append({
+            "date": q2_filing_date.strftime("%Y-%m-%d"),
+            "type": "10-Q Filing",
+            "quarter": "Q4",
             "url": f"https://www.sec.gov/edgar/search/#/entityName={ticker}&category=form-cat1&filter=10-Q",
             "insights_available": True
         })
@@ -1115,7 +1118,7 @@ def display_sec_filings(tickers, groq_client):
                         color_hex = "#10B981" if performance_color == "green" else "#f59e0b" if performance_color == "yellow" else "#ef4444"
                         
                         st.markdown(f"""
-                        <div style="margin-bottom: 15px; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                        <div style="margin-bottom: 15px;">
                             <div style="display: flex; align-items: center; margin-bottom: 5px;">
                                 <div style="width: 150px; font-weight: bold;">Performance:</div>
                                 <div style="flex-grow: 1; background-color: #e5e7eb; height: 10px; border-radius: 5px; position: relative;">
@@ -1132,7 +1135,7 @@ def display_sec_filings(tickers, groq_client):
                         color_hex = "#10B981" if growth_color == "green" else "#f59e0b" if growth_color == "yellow" else "#ef4444"
                         
                         st.markdown(f"""
-                        <div style="margin-bottom: 15px; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                        <div style="margin-bottom: 15px;">
                             <div style="display: flex; align-items: center; margin-bottom: 5px;">
                                 <div style="width: 150px; font-weight: bold;">Growth Potential:</div>
                                 <div style="flex-grow: 1; background-color: #e5e7eb; height: 10px; border-radius: 5px; position: relative;">
@@ -1149,7 +1152,7 @@ def display_sec_filings(tickers, groq_client):
                         color_hex = "#ef4444" if risk_color == "green" else "#f59e0b" if risk_color == "yellow" else "#10B981"
                         
                         st.markdown(f"""
-                        <div style="margin-bottom: 15px; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                        <div style="margin-bottom: 15px;">
                             <div style="display: flex; align-items: center; margin-bottom: 5px;">
                                 <div style="width: 150px; font-weight: bold;">Risk:</div>
                                 <div style="flex-grow: 1; background-color: #e5e7eb; height: 10px; border-radius: 5px; position: relative;">
@@ -1166,7 +1169,7 @@ def display_sec_filings(tickers, groq_client):
                         color_hex = "#10B981" if edge_color == "green" else "#f59e0b" if edge_color == "yellow" else "#ef4444"
                         
                         st.markdown(f"""
-                        <div style="margin-bottom: 15px; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                        <div style="margin-bottom: 15px;">
                             <div style="display: flex; align-items: center; margin-bottom: 5px;">
                                 <div style="width: 150px; font-weight: bold;">Competitive Edge:</div>
                                 <div style="flex-grow: 1; background-color: #e5e7eb; height: 10px; border-radius: 5px; position: relative;">
@@ -1183,7 +1186,7 @@ def display_sec_filings(tickers, groq_client):
                     
                     for filing in filings:
                         st.markdown(f"""
-                        <div style="padding: 15px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 15px; background-color: white;">
+                        <div style="padding: 15px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 15px;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                                 <div>
                                     <strong>{ticker}</strong> - <strong>{filing.get('quarter', '')}</strong>
@@ -1203,6 +1206,7 @@ def display_sec_filings(tickers, groq_client):
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
+
 def generate_sec_filing_insights(groq_client, ticker):
     """Generate insights from SEC filings using Groq"""
     try:
@@ -1240,7 +1244,7 @@ def generate_sec_filing_insights(groq_client, ticker):
                 full_prompt = prompt_intro + prompt_details + prompt_json
                 
                 response = groq_client.chat.completions.create(
-                    model="deepseek-r1-distill-qwen-32b",
+                    model="deepseek-r1-distill-llama-70b",
                     messages=[
                         {"role": "system", "content": "You are a financial analyst providing insights from SEC filings."},
                         {"role": "user", "content": full_prompt}
@@ -1259,7 +1263,7 @@ def generate_sec_filing_insights(groq_client, ticker):
 def main():
     """Main function to run the Streamlit app"""
     # Custom header
-    st.markdown('<div class="main-header"><h1>Financial Automation with LLMs</h1></div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header"><h1>Financial Research Automation with LLMs</h1></div>', unsafe_allow_html=True)
     
     # Initialize clients
     pinecone_index, groq_client, openai_client = initialize_clients()
