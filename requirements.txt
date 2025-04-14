@@ -8,5 +8,7 @@ scikit-learn
 pinecone-client
 numpy
 requests
-streamlit 
+streamlit
+plotly
+pandas
 groq
