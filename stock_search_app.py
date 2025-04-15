@@ -548,7 +548,7 @@ DO NOT include any thinking process or tags like <think> or </think> in your res
             raise ValueError("Invalid analysis type or missing required parameters")
         
         response = groq_client.chat.completions.create(
-            model="deepseek-r1-distill-llama-70b",
+    model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
@@ -598,7 +598,7 @@ def analyze_article_sentiment(article_text, groq_client):
     
     try:
         response = groq_client.chat.completions.create(
-            model="deepseek-r1-distill-llama-70b",
+    model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": article_text}
@@ -659,7 +659,7 @@ def get_market_factors(groq_client, ticker):
                     Scores should be between 1-10."""
         
         response = groq_client.chat.completions.create(
-            model="deepseek-r1-distill-llama-70b",
+    model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": company_info}
@@ -1244,7 +1244,7 @@ def generate_sec_filing_insights(groq_client, ticker):
                 full_prompt = prompt_intro + prompt_details + prompt_json
                 
                 response = groq_client.chat.completions.create(
-                    model="deepseek-r1-distill-llama-70b",
+                    model="llama-3.3-70b-versatile",
                     messages=[
                         {"role": "system", "content": "You are a financial analyst providing insights from SEC filings."},
                         {"role": "user", "content": full_prompt}
